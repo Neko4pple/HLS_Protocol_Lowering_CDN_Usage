@@ -1,0 +1,25 @@
+# NVIDIA CUDA 기반 이미지
+FROM nvidia/cuda:11.0.3-cudnn8-devel-ubuntu18.04
+
+RUN apt-get update && apt-get install -y \
+    python3.7 \
+    python3.7-dev \
+    python3-pip \
+    libgl1-mesa-glx \
+    nano \
+    && rm -rf /var/lib/apt/lists/*
+
+# 기본 Python을 Python 3.7로 설정
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1 \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+
+RUN python3 -m pip install --upgrade pip
+
+# requirements.txt 복사 및 설치
+COPY requirements.txt .
+RUN python3 -m pip install -r requirements.txt
+COPY . .
+
+EXPOSE 3002
+
+CMD ["python3", "app.py"]

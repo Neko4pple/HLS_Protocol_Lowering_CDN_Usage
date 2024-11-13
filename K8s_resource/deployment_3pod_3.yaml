@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-3pod_3
+  namespace: hls
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gpu-3pod
+  template:
+    metadata:
+      labels:
+        app: gpu-3pod
+    spec:
+      nodeSelector:
+        node-type: ice04
+      containers:
+        - name: gpu-3pod_3
+          image: zino11/upscaling_server_3_3:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3004
+          env:
+            - name: NODE_ENV
+              value: "production"
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+          volumeMounts:
+            - mountPath: /outputvideo
+              name: outputvideo-rook-ceph
+      volumes:
+        - name: outputvideo-rook-ceph
+          persistentVolumeClaim:
+            claimName: new-outputvideo-pvc
